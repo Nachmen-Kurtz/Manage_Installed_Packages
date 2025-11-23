@@ -13,11 +13,16 @@
     - [Basic Usage](#basic-usage)
     - [Output Location](#output-location)
   - [What Gets Collected](#what-gets-collected)
-    - [DNF](#dnf)
+    - [DNF (Fedora/RHEL)](#dnf-fedorarhel)
+    - [APT (Debian/Ubuntu)](#apt-debianubuntu)
+    - [Pacman (Arch Linux)](#pacman-arch-linux)
     - [Flatpak](#flatpak)
-    - [RPM](#rpm)
     - [Cargo](#cargo)
+    - [Homebrew (macOS)](#homebrew-macos)
   - [Use Cases](#use-cases)
+  - [Script Output](#script-output)
+    - [System Detection](#system-detection)
+    - [Progress Indicators](#progress-indicators)
   - [Troubleshooting](#troubleshooting)
     - [Permission Denied](#permission-denied)
     - [Package Manager Not Found](#package-manager-not-found)
@@ -25,6 +30,7 @@
   - [Examples](#examples)
     - [Running the Script](#running-the-script)
     - [Viewing Collected Data](#viewing-collected-data)
+  - [Supported Platforms](#supported-platforms)
   - [Limitations](#limitations)
   - [Contributing](#contributing)
   - [License](#license)
@@ -32,38 +38,44 @@
   - [Author](#author)
 <!--toc:end-->
 
-A comprehensive Bash script for collecting and archiving package management history and database information from multiple package managers on Linux systems.
+A comprehensive Bash script for collecting and archiving package management history and database information from multiple package managers across Linux and macOS systems.
 
 ## Overview
 
-This script collects historical data and current state information from DNF, Flatpak, RPM, and Cargo package managers, organizing the output into timestamped directories for easy reference and backup.
+This script automatically detects your operating system and available package managers, then collects historical data and current state information, organizing the output into timestamped directories for easy reference and backup.
 
 ## Features
 
-- **Multi-Package Manager Support**: DNF, Flatpak, RPM, and Cargo
-- **Timestamped Archives**: Each run creates a uniquely dated directory
-- **Comprehensive History**: Collects transaction history, installed packages, and database files
-- **Error Resilient**: Continues execution even if some package managers are not installed
-- **Organized Output**: Separate subdirectories for each package manager
+- **🎨 Colorful Output**: Beautiful, color-coded progress indicators and status messages
+- **🖥️ Multi-Platform Support**: Works on Linux (Fedora, Debian, Arch) and macOS
+- **📦 Multi-Package Manager Support**: DNF, APT, Pacman, Flatpak, Cargo, and Homebrew
+- **🔍 Automatic Detection**: Identifies your OS and installed package managers
+- **⏰ Timestamped Archives**: Each run creates a uniquely dated directory
+- **📊 Comprehensive History**: Collects transaction history, installed packages, and essential database files
+- **💪 Error Resilient**: Continues execution even if some package managers are not installed
+- **🗂️ Organized Output**: Separate subdirectories for each package manager
+- **⚡ Optimized**: Only copies essential database files, saving disk space
 
 ## Requirements
 
 ### System Requirements
 
-- Linux distribution (Fedora, RHEL, or similar recommended)
+- Linux distribution (Fedora, Debian, Ubuntu, Arch, RHEL, or similar) **OR** macOS
 - Bash shell (version 4.0 or higher)
-- Root/sudo access (required for DNF operations and database copying)
+- Root/sudo access (required for most operations and database copying on Linux)
 
 ### Package Managers
 
-The script will collect data from any of the following that are installed:
+The script will automatically detect and collect data from any of the following that are installed:
 
 - **DNF** (Dandified YUM) - Fedora/RHEL package manager
+- **APT** (Advanced Package Tool) - Debian/Ubuntu package manager
+- **Pacman** - Arch Linux package manager
 - **Flatpak** - Universal Linux application distribution
-- **RPM** (RPM Package Manager) - Low-level package manager
 - **Cargo** - Rust package manager
+- **Homebrew** - macOS package manager
 
-*Note: The script will skip any package manager that is not installed on your system.*
+*Note: The script will automatically detect which package managers are available and skip those that aren't installed.*
 
 ### Optional Tools
 
@@ -89,10 +101,16 @@ chmod +x collect_package_history.sh
 
 ### Basic Usage
 
-Run the script with sudo privileges:
+**Linux:**
 
 ```bash
 sudo ./collect_package_history.sh
+```
+
+**macOS (Homebrew doesn't require sudo):**
+
+```bash
+./collect_package_history.sh
 ```
 
 ### Output Location
@@ -101,45 +119,86 @@ The script creates a timestamped directory in your current working directory:
 
 ```
 Manage_Packages_YYYY-MM-DD_HH-MM-SS/
-├── DNF/
+├── DNF/              (if DNF is detected)
 │   ├── dnf_history_list.txt
 │   ├── dnf_repolist.txt
 │   ├── dnf_history_info_*.txt
 │   ├── dnf_list_installed.txt
-│   └── [libdnf5 database files]
-├── Flatpak/
+│   └── [essential database files]
+├── APT/              (if APT is detected)
+│   ├── apt_list_installed.txt
+│   ├── history.log
+│   ├── dpkg.log
+│   ├── apt_cache_policy.txt
+│   ├── sources.list
+│   └── sources.list.d/
+├── Pacman/           (if Pacman is detected)
+│   ├── pacman_installed.txt
+│   ├── pacman_explicit.txt
+│   ├── pacman_foreign.txt
+│   ├── pacman.log
+│   └── mirrorlist
+├── Flatpak/          (if Flatpak is detected)
 │   ├── flatpak_history.txt
 │   ├── flatpak_list_apps.txt
-│   └── flatpak_list_all.txt
-├── RPM/
-│   └── [RPM database files]
-└── Cargo/
-    └── cargo_install_list.txt
+│   ├── flatpak_list_all.txt
+│   └── flatpak_remotes.txt
+├── RPM/              (if RPM/DNF is detected)
+│   └── [essential database files]
+├── Cargo/            (if Cargo is detected)
+│   └── cargo_install_list.txt
+└── Homebrew/         (if Homebrew is detected)
+    ├── brew_list.txt
+    ├── brew_list_cask.txt
+    ├── brew_leaves.txt
+    ├── brew_tap.txt
+    └── brew_info.json
 ```
 
 ## What Gets Collected
 
-### DNF
+### DNF (Fedora/RHEL)
 
 - Transaction history list
 - Repository list
 - Detailed information for each transaction
 - List of all installed packages
-- libdnf5 database files from `/usr/lib/sysimage/libdnf5/`
+- **Essential database files only** (SQLite databases, .repo files)
+
+### APT (Debian/Ubuntu)
+
+- List of installed packages
+- APT history logs (`/var/log/apt/history.log`)
+- DPKG logs (`/var/log/dpkg.log`)
+- APT cache policy
+- Repository sources (`sources.list` and `sources.list.d/`)
+
+### Pacman (Arch Linux)
+
+- All installed packages (`pacman -Q`)
+- Explicitly installed packages (`pacman -Qe`)
+- Foreign/AUR packages (`pacman -Qm`)
+- Installation log (`/var/log/pacman.log`)
+- Mirror list configuration
 
 ### Flatpak
 
 - Application installation/update history
 - List of installed applications
 - List of all Flatpak packages (including runtimes)
-
-### RPM
-
-- Complete RPM database from `/usr/lib/sysimage/rpm/`
+- Configured remotes
 
 ### Cargo
 
 - List of all Rust packages installed via `cargo install`
+
+### Homebrew (macOS)
+
+- List of installed formulae
+- List of installed casks
+- Leaf packages (not dependencies)
+- Configured taps
+- Detailed package information (JSON format)
 
 ## Use Cases
 
@@ -148,20 +207,64 @@ Manage_Packages_YYYY-MM-DD_HH-MM-SS/
 - **Migration Planning**: Document current system state before upgrades
 - **Backup Reference**: Keep records of package installations
 - **Audit Trail**: Track changes to system packages over time
+- **Cross-Platform Management**: Maintain consistent documentation across different systems
+
+## Script Output
+
+### System Detection
+
+At startup, the script displays:
+
+- Operating system name and version
+- Detected package managers
+- Collection plan showing what will be gathered
+
+Example output:
+
+```
+============================================
+Package Management History Collection
+============================================
+Script started at: 2024-11-23_15-30-45
+
+System Information
+Operating System: Fedora Linux 39
+OS Type: fedora
+
+Available Package Managers
+  ✓ DNF
+  ✓ Flatpak
+  ✓ Cargo
+
+Collection Plan
+The script will collect:
+  • DNF: Transaction history, repositories, installed packages
+  • Flatpak: History, installed applications
+  • Cargo: Installed Rust packages
+```
+
+### Progress Indicators
+
+- ✓ Green checkmarks for successful operations
+- ⚠ Yellow warnings for non-critical issues
+- ✗ Red errors for failures
+- → Blue arrows for informational messages
 
 ## Troubleshooting
 
 ### Permission Denied
 
-If you see permission errors, ensure you're running with sudo:
+**Linux**: If you see permission errors, ensure you're running with sudo:
 
 ```bash
 sudo ./collect_package_history.sh
 ```
 
+**macOS**: Most Homebrew operations don't require sudo. Try running without it first.
+
 ### Package Manager Not Found
 
-If a package manager is missing, the script will display a warning and skip that section. This is normal behavior.
+If a package manager is missing, the script will display a message and skip that section. This is normal behavior and not an error.
 
 ### Database Files Not Found
 
@@ -173,12 +276,32 @@ If database directories don't exist at the expected locations, the script will s
 
 ```bash
 $ sudo ./collect_package_history.sh
-Script started at: 2024-11-19_14-30-45
-Created directory structure in: Manage_Packages_2024-11-19_14-30-45
 
 ============================================
-Collecting DNF History...
+Package Management History Collection
 ============================================
+Script started at: 2024-11-23_15-30-45
+
+System Information
+Operating System: Ubuntu 22.04 LTS
+OS Type: ubuntu
+
+Available Package Managers
+  ✓ APT
+  ✓ Flatpak
+
+Collection Plan
+The script will collect:
+  • APT: Installation logs, installed packages, repositories
+  • Flatpak: History, installed applications
+
+✓ Created directory structure in: Manage_Packages_2024-11-23_15-30-45
+
+============================================
+Collecting APT History
+============================================
+→ Running: apt list --installed
+✓ APT installed packages collected
 ...
 ```
 
@@ -188,28 +311,50 @@ Collecting DNF History...
 # View DNF transaction history
 cat Manage_Packages_*/DNF/dnf_history_list.txt
 
-# View installed Flatpak apps
-cat Manage_Packages_*/Flatpak/flatpak_list_apps.txt
+# View installed APT packages
+cat Manage_Packages_*/APT/apt_list_installed.txt
+
+# View Pacman explicitly installed packages
+cat Manage_Packages_*/Pacman/pacman_explicit.txt
+
+# View Homebrew formulae
+cat Manage_Packages_*/Homebrew/brew_list.txt
 
 # Check total size of collected data
 du -sh Manage_Packages_*
 ```
 
+## Supported Platforms
+
+| Platform | Package Managers | Status |
+|----------|-----------------|--------|
+| Fedora 33+ | DNF, RPM, Flatpak, Cargo | ✓ Tested |
+| RHEL 8+ | DNF, RPM, Flatpak, Cargo | ✓ Tested |
+| CentOS Stream | DNF, RPM, Flatpak, Cargo | ✓ Expected to work |
+| Ubuntu 18.04+ | APT, Flatpak, Cargo | ✓ Expected to work |
+| Debian 10+ | APT, Flatpak, Cargo | ✓ Expected to work |
+| Arch Linux | Pacman, Flatpak, Cargo | ✓ Expected to work |
+| Manjaro | Pacman, Flatpak, Cargo | ✓ Expected to work |
+| macOS 10.15+ | Homebrew, Cargo | ✓ Expected to work |
+
 ## Limitations
 
-- Requires root access for full functionality
-- Database file copies can be large (especially RPM database)
-- Does not collect data from other package managers (apt, zypper, pacman, etc.)
+- Linux systems require root/sudo access for full functionality
+- **Optimized database copying**: Only essential files are copied to save space
+- Does not collect data from other package managers (zypper, etc.)
 - Historical data depends on system retention policies
+- Homebrew on macOS doesn't require sudo but other package managers might
 
 ## Contributing
 
 To extend this script for additional package managers or features, follow the established pattern:
 
-1. Define output directory
-2. Check if package manager exists
-3. Run collection commands with error handling
-4. Save output to appropriate subdirectory
+1. Add package manager to detection function
+2. Define output directory variable
+3. Check if package manager command exists
+4. Implement collection commands with colored output
+5. Save output to appropriate subdirectory
+6. Follow existing error handling pattern
 
 ## License
 
@@ -217,8 +362,9 @@ This script is provided as-is for system administration purposes.
 
 ## Version History
 
+- **v2.0** - Multi-platform support (APT, Pacman, Homebrew), OS detection, colorful output, optimized database copying
 - **v1.0** - Initial release with DNF, Flatpak, RPM, and Cargo support
 
 ## Author
 
-Created for comprehensive package management documentation and system state archival.
+Created for comprehensive package management documentation and system state archival across multiple platforms.
