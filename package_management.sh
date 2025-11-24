@@ -77,12 +77,12 @@ detect_os() {
 detect_package_managers() {
   AVAILABLE_PKG_MGRS=()
 
-  command -v dnf &>/dev/null && AVAILABLE_PKG_MGRS+=("DNF")
-  command -v apt &>/dev/null && AVAILABLE_PKG_MGRS+=("APT")
-  command -v pacman &>/dev/null && AVAILABLE_PKG_MGRS+=("Pacman")
-  command -v flatpak &>/dev/null && AVAILABLE_PKG_MGRS+=("Flatpak")
-  command -v cargo &>/dev/null && AVAILABLE_PKG_MGRS+=("Cargo")
-  command -v brew &>/dev/null && AVAILABLE_PKG_MGRS+=("Homebrew")
+  if command -v dnf &>/dev/null; then AVAILABLE_PKG_MGRS+=("DNF"); fi
+  if command -v apt &>/dev/null; then AVAILABLE_PKG_MGRS+=("APT"); fi
+  if command -v pacman &>/dev/null; then AVAILABLE_PKG_MGRS+=("Pacman"); fi
+  if command -v flatpak &>/dev/null; then AVAILABLE_PKG_MGRS+=("Flatpak"); fi
+  if command -v cargo &>/dev/null; then AVAILABLE_PKG_MGRS+=("Cargo"); fi
+  if command -v brew &>/dev/null; then AVAILABLE_PKG_MGRS+=("Homebrew"); fi
 }
 
 # ============================================
