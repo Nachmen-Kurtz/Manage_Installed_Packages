@@ -185,12 +185,6 @@ if [[ " ${AVAILABLE_PKG_MGRS[@]} " =~ " DNF " ]]; then
   print_info "Running: dnf repolist"
   dnf repolist >"${DNF_OUTPUT}/dnf_repolist.txt" 2>&1 && print_success "DNF repolist collected" || print_warning "dnf repolist failed"
 
-  print_info "Collecting detailed history for each transaction..."
-  for id in $(dnf history list | awk '{print $1}' | grep '^[0-9]\+$'); do
-    dnf history info "$id" >"${DNF_OUTPUT}/dnf_history_info_${id}.txt" 2>&1 || print_warning "Failed to get info for ID $id"
-  done
-  print_success "DNF detailed history collected"
-
   print_info "Running: dnf list --installed"
   dnf list --installed >"${DNF_OUTPUT}/dnf_list_installed.txt" 2>&1 && print_success "DNF installed packages list collected" || print_warning "dnf list installed failed"
 

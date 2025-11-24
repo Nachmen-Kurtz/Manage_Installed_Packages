@@ -159,9 +159,8 @@ Manage_Packages_YYYY-MM-DD_HH-MM-SS/
 
 ### DNF (Fedora/RHEL)
 
-- Transaction history list
+- Transaction history list (summary)
 - Repository list
-- Detailed information for each transaction
 - List of all installed packages
 - **Essential database files only** (SQLite databases, .repo files)
 
@@ -362,6 +361,7 @@ This script is provided as-is for system administration purposes.
 
 ## Version History
 
+- **v2.1** - Removed verbose DNF transaction details to reduce file clutter
 - **v2.0** - Multi-platform support (APT, Pacman, Homebrew), OS detection, colorful output, optimized database copying
 - **v1.0** - Initial release with DNF, Flatpak, RPM, and Cargo support
 

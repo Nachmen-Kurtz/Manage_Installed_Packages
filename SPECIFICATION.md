@@ -58,8 +58,8 @@
 
 ## Document Information
 
-- **Version**: 2.0
-- **Date**: 2024-11-23
+- **Version**: 2.1
+- **Date**: 2024-11-24
 - **Status**: Implemented
 - **Purpose**: Technical specification for cross-platform package management data collection script
 
@@ -154,9 +154,15 @@ Manage_Packages_${CURRENT_DATE}/
 **Required Commands**:
 
 1. `dnf history list` → `dnf_history_list.txt`
+   - Lists all transaction IDs and summaries
+
 2. `dnf repolist` → `dnf_repolist.txt`
-3. `dnf history info "$id"` → `dnf_history_info_${id}.txt`
-4. `dnf list --installed` → `dnf_list_installed.txt`
+   - Lists configured repositories
+
+3. `dnf list --installed` → `dnf_list_installed.txt`
+   - Complete snapshot of installed packages
+
+**Note**: Individual transaction details (`dnf history info`) are NOT collected to avoid creating hundreds of files.
 
 #### 2.4.2 APT Commands
 
@@ -621,6 +627,7 @@ Script should be reviewed/updated when:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.1 | 2024-11-24 | Removed verbose DNF transaction details collection to reduce file clutter |
 | 2.0 | 2024-11-23 | Added APT, Pacman, Homebrew support; OS detection; colored output; optimized database copying |
 | 1.0 | 2024-11-19 | Initial specification with DNF, Flatpak, RPM, Cargo |
 
