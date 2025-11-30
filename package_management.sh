@@ -270,7 +270,7 @@ if [[ " ${AVAILABLE_PKG_MGRS[@]} " =~ " Flatpak " ]]; then
   flatpak history >"${FLATPAK_OUTPUT}/flatpak_history.txt" 2>&1 && print_success "Flatpak history collected" || print_warning "flatpak history failed"
 
   print_info "Running: flatpak list --app"
-  flatpak list --app >"${FLATPAK_OUTPUT}/flatpak_list_apps.txt" 2>&1 && print_success "Flatpak apps list collected" || print_warning "flatpak list --app failed"
+  flatpak list --app --columns=application >"${FLATPAK_OUTPUT}/flatpak_list_apps.txt" 2>&1 && print_success "Flatpak apps list collected" || print_warning "flatpak list --app failed"
 
   print_info "Running: flatpak list"
   flatpak list >"${FLATPAK_OUTPUT}/flatpak_list_all.txt" 2>&1 && print_success "Complete Flatpak list collected" || print_warning "flatpak list failed"
