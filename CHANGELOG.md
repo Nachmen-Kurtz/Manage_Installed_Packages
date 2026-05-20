@@ -5,6 +5,18 @@ All notable changes to the Package Management History Collection Script will be 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.0] - 2026-05-20
+
+### Added
+- **XBPS support** (Void Linux package manager):
+  - `xbps-query -l` - All installed packages
+  - `xbps-query -m` - Manually installed packages
+  - `xbps-query --list-repos` - Configured repositories
+  - `/etc/xbps.d/` - XBPS configuration directory
+
+### Documentation
+- Updated README.md, SPECIFICATION.md, and CHANGELOG.md to include XBPS
+
 ## [2.1.0] - 2024-11-24
 
 ### Removed
@@ -113,21 +125,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Version Comparison Summary
 
-| Feature | v1.0 | v2.0 | v2.1 |
-|---------|------|------|------|
-| DNF Support | ✓ | ✓ | ✓ |
-| APT Support | ✗ | ✓ | ✓ |
-| Pacman Support | ✗ | ✓ | ✓ |
-| Homebrew Support | ✗ | ✓ | ✓ |
-| Flatpak Support | ✓ | ✓ | ✓ |
-| Cargo Support | ✓ | ✓ | ✓ |
-| RPM Support | ✓ | ✓ | ✓ |
-| OS Detection | ✗ | ✓ | ✓ |
-| Colorful Output | ✗ | ✓ | ✓ |
-| Optimized DB Copy | ✗ | ✓ | ✓ |
-| DNF Transaction Details | ✓ | ✓ | ✗ |
-| Typical Output Size | ~500MB | ~50MB | ~50MB |
-| Platform Support | Linux | Linux + macOS | Linux + macOS |
+| Feature | v1.0 | v2.0 | v2.1 | v2.2 |
+|---------|------|------|------|------|
+| XBPS Support | ✗ | ✗ | ✗ | ✓ |
+| DNF Support | ✓ | ✓ | ✓ | ✓ |
+| APT Support | ✗ | ✓ | ✓ | ✓ |
+| Pacman Support | ✗ | ✓ | ✓ | ✓ |
+| Homebrew Support | ✗ | ✓ | ✓ | ✓ |
+| Flatpak Support | ✓ | ✓ | ✓ | ✓ |
+| Cargo Support | ✓ | ✓ | ✓ | ✓ |
+| RPM Support | ✓ | ✓ | ✓ | ✓ |
+| OS Detection | ✗ | ✓ | ✓ | ✓ |
+| Colorful Output | ✗ | ✓ | ✓ | ✓ |
+| Optimized DB Copy | ✗ | ✓ | ✓ | ✓ |
+| DNF Transaction Details | ✓ | ✓ | ✗ | ✗ |
+| Typical Output Size | ~500MB | ~50MB | ~50MB | ~50MB |
+| Platform Support | Linux | Linux + macOS | Linux + macOS | Linux + macOS |
 
 ---
 

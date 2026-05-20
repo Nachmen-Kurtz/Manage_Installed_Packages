@@ -47,8 +47,8 @@ This script automatically detects your operating system and available package ma
 ## Features
 
 - **🎨 Colorful Output**: Beautiful, color-coded progress indicators and status messages
-- **🖥️ Multi-Platform Support**: Works on Linux (Fedora, Debian, Arch) and macOS
-- **📦 Multi-Package Manager Support**: DNF, APT, Pacman, Flatpak, Cargo, and Homebrew
+- **🖥️ Multi-Platform Support**: Works on Linux (Fedora, Debian, Arch, Void) and macOS
+- **📦 Multi-Package Manager Support**: XBPS, DNF, APT, Pacman, Flatpak, Cargo, and Homebrew
 - **🔍 Automatic Detection**: Identifies your OS and installed package managers
 - **⏰ Timestamped Archives**: Each run creates a uniquely dated directory
 - **📊 Comprehensive History**: Collects transaction history, installed packages, and essential database files
@@ -68,6 +68,7 @@ This script automatically detects your operating system and available package ma
 
 The script will automatically detect and collect data from any of the following that are installed:
 
+- **XBPS** (X Binary Package System) - Void Linux package manager
 - **DNF** (Dandified YUM) - Fedora/RHEL package manager
 - **APT** (Advanced Package Tool) - Debian/Ubuntu package manager
 - **Pacman** - Arch Linux package manager
@@ -119,6 +120,11 @@ The script creates a timestamped directory in your current working directory:
 
 ```
 Manage_Packages_YYYY-MM-DD_HH-MM-SS/
+├── XBPS/             (if XBPS is detected)
+│   ├── xbps_installed.txt
+│   ├── xbps_manual.txt
+│   ├── xbps_repos.txt
+│   └── xbps.d/
 ├── DNF/              (if DNF is detected)
 │   ├── dnf_history_list.txt
 │   ├── dnf_repolist.txt
@@ -156,6 +162,13 @@ Manage_Packages_YYYY-MM-DD_HH-MM-SS/
 ```
 
 ## What Gets Collected
+
+### XBPS (Void Linux)
+
+- All installed packages (`xbps-query -l`)
+- Manually installed packages (`xbps-query -m`)
+- Configured repositories (`xbps-query --list-repos`)
+- XBPS configuration directory (`/etc/xbps.d/`)
 
 ### DNF (Fedora/RHEL)
 
@@ -327,6 +340,7 @@ du -sh Manage_Packages_*
 
 | Platform | Package Managers | Status |
 |----------|-----------------|--------|
+| Void Linux | XBPS, Flatpak, Cargo | ✓ Supported |
 | Fedora 33+ | DNF, RPM, Flatpak, Cargo | ✓ Tested |
 | RHEL 8+ | DNF, RPM, Flatpak, Cargo | ✓ Tested |
 | CentOS Stream | DNF, RPM, Flatpak, Cargo | ✓ Expected to work |
@@ -361,6 +375,7 @@ This script is provided as-is for system administration purposes.
 
 ## Version History
 
+- **v2.2** - Added XBPS support (Void Linux)
 - **v2.1** - Removed verbose DNF transaction details to reduce file clutter
 - **v2.0** - Multi-platform support (APT, Pacman, Homebrew), OS detection, colorful output, optimized database copying
 - **v1.0** - Initial release with DNF, Flatpak, RPM, and Cargo support

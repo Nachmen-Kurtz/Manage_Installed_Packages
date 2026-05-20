@@ -58,8 +58,8 @@
 
 ## Document Information
 
-- **Version**: 2.1
-- **Date**: 2024-11-24
+- **Version**: 2.2
+- **Date**: 2026-05-20
 - **Status**: Implemented
 - **Purpose**: Technical specification for cross-platform package management data collection script
 
@@ -71,8 +71,9 @@ This script collects comprehensive package management history and database infor
 
 ### 1.2 Scope
 
-The script handles seven package management systems across multiple platforms:
+The script handles eight package management systems across multiple platforms:
 
+- **XBPS** (X Binary Package System) - Void Linux
 - **DNF** (Dandified YUM) - Fedora/RHEL
 - **APT** (Advanced Package Tool) - Debian/Ubuntu
 - **Pacman** - Arch Linux
@@ -127,6 +128,7 @@ The script handles seven package management systems across multiple platforms:
 
 ```
 Manage_Packages_${CURRENT_DATE}/
+├── XBPS/       (if XBPS detected)
 ├── DNF/        (if DNF detected)
 ├── APT/        (if APT detected)
 ├── Pacman/     (if Pacman detected)
@@ -147,7 +149,25 @@ Manage_Packages_${CURRENT_DATE}/
 - `CARGO_OUTPUT`: Cargo data subdirectory
 - `HOMEBREW_OUTPUT`: Homebrew data subdirectory
 
+*Note: The XBPS output directory is created inline during collection (not pre-created in the directory loop), unlike other managers.*
+
 ### 2.4 Data Collection Commands (FR-004)
+
+#### 2.4.0 XBPS Commands
+
+**Required Commands**:
+
+1. `xbps-query -l` → `xbps_installed.txt`
+   - Lists all installed packages
+
+2. `xbps-query -m` → `xbps_manual.txt`
+   - Lists manually installed packages
+
+3. `xbps-query --list-repos` → `xbps_repos.txt`
+   - Lists configured repositories
+
+4. Copy `/etc/xbps.d/` → `xbps.d/`
+   - XBPS configuration directory (copied if it exists)
 
 #### 2.4.1 DNF Commands
 
@@ -596,6 +616,7 @@ Script should be reviewed/updated when:
 
 **Tested On**:
 
+- Void Linux (current)
 - Fedora 33+
 - RHEL 8+
 - CentOS Stream 8+
@@ -606,6 +627,7 @@ Script should be reviewed/updated when:
 
 **Expected To Work**:
 
+- Any XBPS-based distribution (Void Linux derivatives)
 - Any DNF-based distribution
 - Any APT-based distribution
 - Any Pacman-based distribution (Manjaro, etc.)
@@ -627,6 +649,7 @@ Script should be reviewed/updated when:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 2.2 | 2026-05-20 | Added XBPS support (Void Linux) |
 | 2.1 | 2024-11-24 | Removed verbose DNF transaction details collection to reduce file clutter |
 | 2.0 | 2024-11-23 | Added APT, Pacman, Homebrew support; OS detection; colored output; optimized database copying |
 | 1.0 | 2024-11-19 | Initial specification with DNF, Flatpak, RPM, Cargo |
